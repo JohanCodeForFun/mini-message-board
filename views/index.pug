@@ -2,6 +2,15 @@ extends layout
 
 block content
   h1= title
+
+  navbar 
+    p
+      a(href='/new') Add a new message
+    //- p
+    //-   a(href='/login') Login
+    //- p
+    //-   a(href='/logout') Logout
+
   p Welcome to #{title}
 
   ul

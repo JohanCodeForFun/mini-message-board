@@ -26,4 +26,18 @@ router.get('/', function(req, res, next) {
   );
 });
 
+router.get('/new', function(req, res, next) {
+  res.render('form', { title: 'New Message' });
+});
+
+router.post('/new', (req, res) => {
+  console.log(req.body)
+
+  const { user, text } = req.body
+
+  messages.push({ user, text, added: DateTime.fromJSDate(new Date()).toLocaleString(DateTime.DATE_MED) })
+  
+  res.redirect('/')
+})
+
 module.exports = router;
