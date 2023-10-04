@@ -1,16 +1,19 @@
 var express = require('express');
 var router = express.Router();
+const { DateTime } = require("luxon");
+const dt = DateTime.local().toLocaleString(DateTime.DATETIME_MED);
 
 const messages = [
   {
     text: "Hi there!",
     user: "Amanda",
-    added: new Date()
+    added: DateTime.fromJSDate(new Date()).toLocaleString(DateTime.DATE_MED)
+
   },
   {
     text: "Hey, how are you?",
     user: "Becky",
-    added: new Date()
+    added: DateTime.fromJSDate(new Date()).toLocaleString(DateTime.DATE_MED)
   }
 ];
 
