@@ -1,30 +1,39 @@
-var express = require('express');
-var router = express.Router();
-const { DateTime } = require("luxon");
-const dt = DateTime.local().toLocaleString(DateTime.DATETIME_MED);
+require('dotenv').config()
+const express = require('express');
+const router = express.Router();
+const axios = require('axios');
 
-const messages = [
-  {
-    text: "Hi there!",
-    user: "Amanda",
-    added: DateTime.fromJSDate(new Date()).toLocaleString(DateTime.DATE_MED)
-
-  },
-  {
-    text: "Hey, how are you?",
-    user: "Becky",
-    added: DateTime.fromJSDate(new Date()).toLocaleString(DateTime.DATE_MED)
-  }
-];
+const db = require('../api/queries');
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { 
-    title: 'Mini Message Board',
-    messages: messages
-   },
-  );
+router.get('/', function async(req, res, next) {
+
+  const message_list = axios.get('http://localhost:3005/messages')
+    .then((response) => {
+      res.render('index', { 
+        title: 'Mini Message Board',
+        message_list: response.data
+       },
+      );
+    }
+    )
+    .catch((error) => {
+      console.log(error);
+
+      res.render('error', { 
+        title: 'Error Page',
+        error: error
+       },
+      );
+    })
 });
+
+// API ROUTES
+router.get('/messages', db.getMessages);
+router.get('/messages/:id', db.getMessageById);
+router.post('/messages', db.createMessage);
+router.put('/messages/:id', db.updateMessage);
+router.delete('/messages/:id', db.deleteMessage);
 
 router.get('/new', function(req, res, next) {
   res.render('form', { title: 'New Message' });
@@ -33,9 +42,20 @@ router.get('/new', function(req, res, next) {
 router.post('/new', (req, res) => {
   console.log(req.body)
 
-  const { user, text } = req.body
+  const { username, message } = req.body
 
-  messages.push({ user, text, added: DateTime.fromJSDate(new Date()).toLocaleString(DateTime.DATE_MED) })
+  const postMessage = axios.post('http://localhost:3005/messages', {
+    username,
+    message
+  })
+    .then((response) => {
+      res.redirect('/')
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+
+  // messages.push({ username, message, added: DateTime.fromJSDate(new Date()).toLocaleString(DateTime.DATE_MED) })
   
   res.redirect('/')
 })

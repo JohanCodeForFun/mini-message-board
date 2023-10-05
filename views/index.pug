@@ -14,5 +14,5 @@ block content
   p Welcome to #{title}
 
   ul
-    each message in messages
-      li= message.text + " -- Written by, " + message.user + " (" + message.added + ")."
+    each message in message_list
+      li= message.message + " -- Written by, " + message.username + " (" + message.added + ")."
