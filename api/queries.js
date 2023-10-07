@@ -1,4 +1,5 @@
 const asyncHandler = require('express-async-handler')
+const { body, validationResult } = require('express-validator');
 
 const { Pool } = require('pg');
 const pool = new Pool({
