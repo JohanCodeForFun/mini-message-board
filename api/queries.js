@@ -9,7 +9,6 @@ const { DateTime } = require("luxon");
 const dt = DateTime.local().toLocaleString(DateTime.DATETIME_MED);
 
 const getMessages = asyncHandler(async (req, res) => {
-  // const messages = await pool.query('SELECT * FROM users');
   const messages = await pool.query(`
         SELECT messages.message,
                 messages.added,
@@ -44,7 +43,7 @@ const createMessage = asyncHandler(async (req, res) => {
       INSERT INTO messages (message_usernameid, message)
       VALUES ($1, $2)`, [user_id, message]);
 
-      res.status(201).json(newMessage.rows[0]).redirect('/');
+      res.status(200).redirect('/');
   } else {
 
     const newUser = await pool.query(`
@@ -57,7 +56,7 @@ const createMessage = asyncHandler(async (req, res) => {
       INSERT INTO messages (message_usernameid, message)
       VALUES ($1, $2)`, [newUserId.rows[0].username_id, message]);
 
-      res.status(201).json(newMessage.rows[0]);
+      res.status(200).redirect('/');
     }
 
 });
