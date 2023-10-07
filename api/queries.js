@@ -58,9 +58,8 @@ const createMessage = [
   const { message, username } = req.body;
 
   const messageErrors = validationResult(req).formatWith(({ msg }) => msg);
+
   if (!messageErrors.isEmpty()) {
-    console.log(messageErrors.array())
-    // return res.status(400).json({ errors: messageErrors.array() })
     return res.status(400)
         .render('form', {
         title: 'New Message',
@@ -96,20 +95,43 @@ const createMessage = [
   })
 ];
 
-const updateMessage = asyncHandler(async (req, res) => {
-  const id = req.params.id;
-  const { message, message_usernameid } = req.body;
-  const updatedMessage = await pool.query(
-    'UPDATE messages SET message = $1, message_usernameid = $2 WHERE message_id = $3 RETURNING *',
-    [message, message_usernameid, id]
-  );
-  res.status(200).json(updatedMessage.rows[0]);
-});
+const updateMessage = [
+  messageValidation,
+
+  asyncHandler(async (req, res) => {
+
+    const messageErrors = validationResult(req).formatWith(({ msg }) => msg);
+    if (!messageErrors.isEmpty()) {
+      return res.status(400).json({ errors: messageErrors.array() });
+    };
+
+    const { id } = req.params;
+    const { message, password } = req.body;
+
+    if (password !== process.env.PASSWORD) {
+      return res.status(401).json({ message: 'Incorrect password' });
+    } {
+        console.log('Password correct');
+        const updatedMessage = await pool.query(
+          'UPDATE messages SET message = $1 WHERE messages_id = $2',
+          [message, id]
+        );
+      res.status(200).json(updatedMessage.rows[0]);
+    }
+  })
+];
 
 const deleteMessage = asyncHandler(async (req, res) => {
-  const id = req.params.id;
-  await pool.query('DELETE FROM messages WHERE message_id = $1', [id]);
-  res.status(200).json({ message: `Message ${id} removed` });
+  const { id } = req.params;
+  const { password } = req.body;
+
+  if (password !== process.env.PASSWORD) {
+    return res.status(401).json({ message: 'Incorrect password' });
+  } else {
+    console.log('Password correct');
+    await pool.query('DELETE FROM messages WHERE messages_id = $1', [id]);
+    res.status(200).json({ message: `Message ${id} removed` });
+  }
 });
 
 module.exports = {
