@@ -15,7 +15,8 @@ const getMessages = asyncHandler(async (req, res) => {
                 users.username 
           FROM users
     INNER JOIN messages
-            ON messages.message_usernameid = users.username_id;`);
+            ON messages.message_usernameid = users.username_id
+      ORDER BY messages.added ASC;`);
 
   for (const message of messages.rows) {
     message.added = DateTime.fromJSDate(message.added).toLocaleString(DateTime.DATE_MED)
