@@ -32,28 +32,34 @@ const getMessageById = asyncHandler(async (req, res) => {
 });
 
 const createMessage = asyncHandler(async (req, res) => {
-  // Work in progress
-
-  // TODO:
-  // if username exists, get username_id from users table
-  // if username doesn't exist, create username and get username_id from users table
-  // create message with username_id in messages table with username from users table
-  // return message
 
   const { message, username } = req.body;
 
-  const user = await pool.query('SELECT * FROM users WHERE username_id = $1', [username]);
+  const user = await pool.query(`SELECT username_id FROM users WHERE username = $1`, [username]);
 
-  if (user) {
-    console.log("user", user.rows[0].username_id)
-  }
-  // const newMessage = await pool.query(
-  //   'INSERT INTO messages (message, message_usernameid) VALUES ($1, $2) RETURNING *',
-  //   [message, username]
-  // );
+  if (user.rows.length > 0) {
+    const user_id = user.rows[0].username_id;
 
-  res.status(201).json({ message: "message created" });
-  // res.status(201).json(newMessage.rows[0]);
+    const newMessage = await pool.query(`
+      INSERT INTO messages (message_usernameid, message)
+      VALUES ($1, $2)`, [user_id, message]);
+
+      res.status(201).json(newMessage.rows[0]).redirect('/');
+  } else {
+
+    const newUser = await pool.query(`
+      INSERT INTO users (username)
+      VALUES ($1)`, [username]);
+
+    const newUserId = await pool.query(`SELECT username_id FROM users WHERE username = $1`, [username]);
+
+    const newMessage = await pool.query(`
+      INSERT INTO messages (message_usernameid, message)
+      VALUES ($1, $2)`, [newUserId.rows[0].username_id, message]);
+
+      res.status(201).json(newMessage.rows[0]);
+    }
+
 });
 
 const updateMessage = asyncHandler(async (req, res) => {

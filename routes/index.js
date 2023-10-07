@@ -39,25 +39,25 @@ router.get('/new', function(req, res, next) {
   res.render('form', { title: 'New Message' });
 });
 
-router.post('/new', (req, res) => {
-  console.log(req.body)
+router.post('/new', async (req, res) => {
 
   const { username, message } = req.body
 
-  const postMessage = axios.post('http://localhost:3005/messages', {
+  const postMessage = await axios.post('http://localhost:3005/messages', {
     username,
     message
   })
     .then((response) => {
+      console.log(response.data)
       res.redirect('/')
     })
     .catch((error) => {
-      console.log(error);
+      res.render('error', { 
+        title: 'Error Page',
+        error: error
+       },
+      );
     })
-
-  // messages.push({ username, message, added: DateTime.fromJSDate(new Date()).toLocaleString(DateTime.DATE_MED) })
-  
-  res.redirect('/')
 })
 
 module.exports = router;
