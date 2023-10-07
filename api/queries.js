@@ -20,7 +20,7 @@ const getMessages = asyncHandler(async (req, res) => {
       ORDER BY messages.added ASC;`);
 
   for (const message of messages.rows) {
-    message.added = DateTime.fromJSDate(message.added).toLocaleString(DateTime.DATE_MED)
+    message.added = DateTime.fromJSDate(message.added).toLocaleString(DateTime.DATETIME_SHORT)
   }
 
   res.status(200).json(messages.rows);
