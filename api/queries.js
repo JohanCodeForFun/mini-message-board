@@ -32,9 +32,42 @@ const getMessageById = asyncHandler(async (req, res) => {
   res.status(200).json(message.rows);
 });
 
-const createMessage = asyncHandler(async (req, res) => {
+const messageValidation = [
+  body('message')
+    .escape()
+    .notEmpty()
+    .isLength({ min: 2, max: 255 })
+    .withMessage('Message must be between 2 and 255 characters long')
+    .trim()
+];
 
+const usernameValidation = [
+  body('username')
+    .escape()
+    .notEmpty()
+    .isLength({ min: 3, max: 30 })
+    .withMessage('Username must be between 2 and 255 characters long')
+    .trim()
+];
+
+const createMessage = [
+  messageValidation,
+  usernameValidation,
+
+  asyncHandler(async (req, res) => {
   const { message, username } = req.body;
+
+  const messageErrors = validationResult(req).formatWith(({ msg }) => msg);
+  if (!messageErrors.isEmpty()) {
+    console.log(messageErrors.array())
+    // return res.status(400).json({ errors: messageErrors.array() })
+    return res.status(400)
+        .render('form', {
+        title: 'New Message',
+        errorHeader: 'Error on input',
+        errors: messageErrors.array(),
+      });
+  }
 
   const user = await pool.query(`SELECT username_id FROM users WHERE username = $1`, [username]);
 
@@ -60,8 +93,8 @@ const createMessage = asyncHandler(async (req, res) => {
 
       res.status(200).redirect('/');
     }
-
-});
+  })
+];
 
 const updateMessage = asyncHandler(async (req, res) => {
   const id = req.params.id;

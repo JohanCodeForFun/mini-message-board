@@ -39,25 +39,4 @@ router.get('/new', function(req, res, next) {
   res.render('form', { title: 'New Message' });
 });
 
-router.post('/new', async (req, res) => {
-
-  const { username, message } = req.body
-
-  const postMessage = await axios.post('http://localhost:3005/messages', {
-    username,
-    message
-  })
-    .then((response) => {
-      console.log(response.data)
-      res.redirect('/')
-    })
-    .catch((error) => {
-      res.render('error', { 
-        title: 'Error Page',
-        error: error
-       },
-      );
-    })
-})
-
 module.exports = router;
