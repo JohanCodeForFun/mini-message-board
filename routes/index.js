@@ -8,7 +8,7 @@ const db = require('../api/queries');
 /* GET home page. */
 router.get('/', function async(req, res, next) {
 
-  const message_list = axios.get('http://localhost:3005/messages')
+  const message_list = axios.get('http://localhost:3000/messages')
     .then((response) => {
       res.render('index', { 
         title: 'Mini Message Board',
