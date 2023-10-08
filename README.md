@@ -14,4 +14,4 @@ Project: Mini Message Board from TOP: NodeJS Course
 ![API Store Landing Page](public/images/Screenshot-homepage.png "Homescreen")
 
 ## Add new message
-![API Store Product List](public/images/Screenshot-new-message.png "Add new message")
+![API Store Product List](public/images/screenshot-new-message.png "Add new message")
